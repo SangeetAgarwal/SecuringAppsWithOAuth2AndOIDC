@@ -1,0 +1,23 @@
+﻿@model IEnumerable<NoteViewModel>
+@{
+    ViewData["Title"] = "Notes";
+}
+
+<div class="row">
+
+    <div class="w-100 d-flex flex-column justify-content-around">
+
+        <a asp-action="Create" class="btn btn-success btn-new-note">New Note</a>
+
+        <hr>
+
+        <div class="d-flex justify-content-around flex-wrap">
+            @foreach (var item in Model)
+            {
+                @await Html.PartialAsync("_ViewNote.cshtml", item)
+            }
+        </div>
+
+    </div>
+</div>
+

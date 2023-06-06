@@ -1,0 +1,29 @@
+﻿@model SearchModel
+
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h1>Search</h1>
+
+<form method="post" asp-action="Search">
+    <div class="form-group">
+        <span class="fa fa-search form-control-feedback" style="line-height: 2.375"></span>
+        <input type="text" asp-for="SearchText" class="form-control has-search" placeholder="Search">
+    </div>
+</form>
+
+@if (@Model.SearchResult != null)
+{
+    <h3>Search Results: @Model.SearchResult.Count()</h3>
+}
+
+
+
+@if (Model.SearchResult != null)
+{
+    @foreach (var item in Model.SearchResult)
+    {
+        @await Html.PartialAsync("_ViewNote.cshtml", item)
+    }
+}
