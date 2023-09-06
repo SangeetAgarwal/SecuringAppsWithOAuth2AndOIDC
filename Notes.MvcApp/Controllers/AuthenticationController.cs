@@ -9,6 +9,7 @@ namespace Notes.MvcApp.Controllers;
 public class AuthenticationController : Controller
 {
     [Authorize]
+    // [Authorize(AuthenticationSchemes = "CodeFlowWithPrivateKeyJWTScheme")]
     public async Task Logout()
     {
         // Clears the local cookie

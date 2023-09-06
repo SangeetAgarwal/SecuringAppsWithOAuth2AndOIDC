@@ -12,24 +12,23 @@ namespace MakeBitByte.IDP
                 .GetRequiredService<IServiceScopeFactory>().CreateScope();
             var context = scope.ServiceProvider
                 .GetService<ConfigurationDbContext>();
-            EnsureSeedData(context);
+            // EnsureSeedData(context);
         }
-
 
         private static void EnsureSeedData(ConfigurationDbContext context)
         {
-            if (!context.Clients.Any())
+            foreach (var client in Config.Clients)
             {
-                Log.Debug("Clients being populated");
-                foreach (var client in Config.Clients.ToList())
+                // If a client not found in dB insert it
+                if (!context.Clients.Any(r => r.ClientId == client.ClientId))
                 {
                     context.Clients.Add(client.ToEntity());
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
-            }
-            else
-            {
-                Log.Debug("Clients already populated");
+                else
+                {
+                    Log.Debug($"Client with Client id of {client.ClientId} already populated");
+                }
             }
 
             if (!context.IdentityResources.Any())

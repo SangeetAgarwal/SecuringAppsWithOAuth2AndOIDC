@@ -18,10 +18,10 @@ namespace MakeBitByte.IDP;
 internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
-        {
-
+    {
         var azureActiveDirectoryConfiguration = new AzureActiveDirectoryConfiguration();
-        builder.Configuration.GetSection(nameof(AzureActiveDirectoryConfiguration)).Bind(azureActiveDirectoryConfiguration);
+        builder.Configuration.GetSection(nameof(AzureActiveDirectoryConfiguration))
+            .Bind(azureActiveDirectoryConfiguration);
 
         var facebookConfiguration = new FacebookConfiguration();
         builder.Configuration.GetSection(nameof(FacebookConfiguration)).Bind(facebookConfiguration);
@@ -46,7 +46,6 @@ internal static class HostingExtensions
             iis.AutomaticAuthentication = false;
         });
 
-
         builder.Services.AddAuthentication()
             .AddOpenIdConnect("AAD", "Azure Active Directory", options =>
             {
@@ -63,13 +62,12 @@ internal static class HostingExtensions
             });
 
         builder.Services.AddAuthentication()
-            .AddFacebook("Facebook", 
-                options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.AppId = facebookConfiguration.ClientId;
-                    options.AppSecret = facebookConfiguration.ClientSecret;
-                });
+            .AddFacebook("Facebook", options =>
+            {
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.AppId = facebookConfiguration.ClientId;
+                options.AppSecret = facebookConfiguration.ClientSecret;
+            });
 
         var azureCredential = new DefaultAzureCredential();
 
@@ -92,9 +90,9 @@ internal static class HostingExtensions
         builder.Services.AddScoped<ILocalUserService, LocalUserService>();
 
         builder.Services.AddScoped<IPasswordHasher<Entities.User>, PasswordHasher<Entities.User>>();
-        
+
         builder.Services.AddDbContext<UserDbContext>(options =>
-        { 
+        {
             options.UseSqlServer(identityConfiguration.IdentityUserDbConnectionString);
         });
 
@@ -102,41 +100,46 @@ internal static class HostingExtensions
 
         builder.Services.AddIdentityServer(options =>
             {
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
                 // https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/api_scopes#authorization-based-on-scopes
                 options.EmitStaticAudienceClaim = true;
             })
             .AddProfileService<LocalUserProfileService>()
 
-            //.AddInMemoryIdentityResources(Config.IdentityResources)
-            //.AddInMemoryApiScopes(Config.ApiScopes)
-            //.AddInMemoryClients(Config.Clients)
-            //.AddInMemoryApiResources(Config.ApiResources);
-            .AddConfigurationStore(options =>
-            {
-                options.ConfigureDbContext = optionsBuilder =>
-                {
-                    optionsBuilder.UseSqlServer(
-                        identityConfiguration.IdentityServerDbConnectionString,
-                        sqlServerOptionsAction =>
-                        {
-                            sqlServerOptionsAction.MigrationsAssembly(migrationsAssembly);
-                        });
-                };
-            })
-            //.AddConfigurationStoreCache()
-            .AddOperationalStore(options =>
-            {
-                options.ConfigureDbContext = optionsBuilder =>
-                {
-                    optionsBuilder.UseSqlServer(identityConfiguration.IdentityServerDbConnectionString,
-                        sqlServerDbContextOptionsBuilder =>
-                        {
-                            sqlServerDbContextOptionsBuilder.MigrationsAssembly(migrationsAssembly);
-                        });
-                };
-                options.EnableTokenCleanup = true;
-            });
-            // .AddSigningCredential(signingCertificate);
+            .AddInMemoryIdentityResources(Config.IdentityResources)
+            .AddInMemoryApiScopes(Config.ApiScopes)
+            .AddInMemoryClients(Config.Clients)
+            .AddInMemoryApiResources(Config.ApiResources)
+            .AddJwtBearerClientAuthentication();
+            // .AddConfigurationStore(options =>
+            // {
+            //     options.ConfigureDbContext = optionsBuilder =>
+            //     {
+            //         optionsBuilder.UseSqlServer(identityConfiguration.IdentityServerDbConnectionString,
+            //             sqlServerOptionsAction =>
+            //             {
+            //                 sqlServerOptionsAction.MigrationsAssembly(migrationsAssembly);
+            //             });
+            //     };
+            // })
+            // //.AddConfigurationStoreCache()
+            // .AddOperationalStore(options =>
+            // {
+            //     options.ConfigureDbContext = optionsBuilder =>
+            //     {
+            //         optionsBuilder.UseSqlServer(identityConfiguration.IdentityServerDbConnectionString,
+            //             sqlServerDbContextOptionsBuilder =>
+            //             {
+            //                 sqlServerDbContextOptionsBuilder.MigrationsAssembly(migrationsAssembly);
+            //             });
+            //     };
+            //     options.EnableTokenCleanup = true;
+            // });
+        // .AddSigningCredential(signingCertificate);
+
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
@@ -145,13 +148,13 @@ internal static class HostingExtensions
 
         return builder.Build();
     }
-    
+
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         app.UseForwardedHeaders();
 
         app.UseSerilogRequestLogging();
-    
+
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();

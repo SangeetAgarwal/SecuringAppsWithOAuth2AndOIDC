@@ -1,18 +1,26 @@
-    using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Notes.MvcApp.Configuration;
+using Notes.MvcApp.Notes.Api.Configuration;
+using Notes.MvcApp.OidcEvents;
 using Notes.MvcApp.Services.Configuration;
+using Notes.MvcApp.Services.OidcServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var identityServerConfiguration = new IdentityServerConfiguration();
 
 var clientConfiguration = new ClientConfiguration();
+var notesApiConfiguration = new NotesApiConfiguration();
+
+builder.Configuration.GetSection(nameof(NotesApiConfiguration)).Bind(notesApiConfiguration);
 
 builder.Configuration.GetSection(nameof(IdentityServerConfiguration))
     .Bind(identityServerConfiguration);
@@ -25,11 +33,31 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddNotesService();
 
+builder.Services.AddSingleton<IdentityServerConfiguration>(_ => identityServerConfiguration);
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddAccessTokenManagement();
+
+// IDP client
+builder.Services.AddHttpClient("IdpClient", client =>
+{
+    client.BaseAddress = new Uri(identityServerConfiguration.BaseUrl);
+});
+
+builder.Services.AddHttpClient("ApiClientPrivateKeyJwt", client =>
+{
+    client.BaseAddress = new Uri(notesApiConfiguration.BaseUrl ?? throw new ApplicationException($"valid base url not supplied for {nameof(notesApiConfiguration)}"));
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
+builder.Services.AddSingleton<IAuthorizationRequestSigner, AuthorizationRequestSigner>();
+
+builder.Services.AddTransient<WebClientJwtEvent>();
+builder.Services.AddTransient<WebClientJAREvent>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -80,6 +108,74 @@ builder.Services.AddAuthentication(options =>
         NameClaimType = "given_name"
     };
     options.AccessDeniedPath = "/Authentication/AccessDenied";
+})
+.AddOpenIdConnect("CodeFlowWithPrivateKeyJWTScheme", options =>
+{
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.Authority = identityServerConfiguration.BaseUrl;
+    options.CallbackPath = "/signin-codeflowprivatekeyjwt";
+    options.ResponseType = "code";
+
+    options.SaveTokens = true;
+
+    options.GetClaimsFromUserInfoEndpoint = true;
+
+    options.ClientId = "notesmvcappprivatekeyjwt";
+
+    options.Scope.Add("roles");
+    options.Scope.Add("subscriberSince");
+    options.Scope.Add("notesapi.write");
+    options.Scope.Add("notesapi.read");
+    options.Scope.Add("notesapi.fullaccess");
+
+    options.ClaimActions.Remove("aud");
+    options.ClaimActions.DeleteClaim("sid");
+    options.ClaimActions.DeleteClaim("idp");
+
+    options.ClaimActions.MapJsonKey("role", "role");
+    options.ClaimActions.MapJsonKey("subscriberSince", "subscriberSince");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "role",
+        NameClaimType = "given_name"
+    };
+
+    options.AccessDeniedPath = "/Authentication/AccessDenied";
+
+    options.EventsType = typeof(WebClientJwtEvent);
+})
+.AddOpenIdConnect("CodeFlowWithJARScheme", options =>
+{
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.Authority = identityServerConfiguration.BaseUrl;
+    options.ClientId = "notesmvcappjar";
+    options.ClientSecret = clientConfiguration.ClientSecret;
+    options.CallbackPath = "/signin-codeflowjar";
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+    options.GetClaimsFromUserInfoEndpoint = true;
+
+    options.Scope.Add("roles");
+    options.Scope.Add("subscriberSince");
+    options.Scope.Add("notesapi.write");
+    options.Scope.Add("notesapi.read");
+    options.Scope.Add("notesapi.fullaccess");
+
+    options.ClaimActions.Remove("aud");
+    options.ClaimActions.DeleteClaim("sid");
+    options.ClaimActions.DeleteClaim("idp");
+
+    options.ClaimActions.MapJsonKey("role", "role");
+    options.ClaimActions.MapJsonKey("subscriberSince", "subscriberSince");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "role",
+        NameClaimType = "given_name"
+    };
+
+    options.EventsType = typeof(WebClientJAREvent);
 });
 
 builder.Services.AddAuthorization(authorizationOptions =>
