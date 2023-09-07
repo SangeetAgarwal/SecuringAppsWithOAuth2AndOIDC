@@ -100,7 +100,6 @@ public static class Config
                         }
                     },
                 AllowedGrantTypes = GrantTypes.Code,
-
                 RedirectUris = { "https://localhost:7123/signin-codeflowprivatekeyjwt" },
                 FrontChannelLogoutUri = "https://localhost:7123/signout-oidc",
                 PostLogoutRedirectUris = { "https://localhost:7123/signout-callback-oidc" },
@@ -133,6 +132,37 @@ public static class Config
                 RedirectUris = { "https://localhost:7123/signin-codeflowjar" },
                 FrontChannelLogoutUri = "https://localhost:7123/signout-oidc",
                 PostLogoutRedirectUris = { "https://localhost:7123/signout-callback-oidc" },
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "roles",
+                    "notesapi.fullaccess",
+                    "notesapi.read",
+                    "notesapi.write",
+                    "subscriberSince"
+                },
+            },
+            // code flow + PKCE + JAR + private key JWT auth
+            new Client
+            {
+                ClientId = "notesmvcappjwtandjar",
+                RequireRequestObject = true,
+                // Use below for verifying signed JAR and client auth via private key JWT
+                ClientSecrets =                
+                {
+                    new Secret
+                    {
+                        Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
+                        Value = "MIICwDCCAaigAwIBAgIIUMTNpnXxoG8wDQYJKoZIhvcNAQELBQAwDzENMAsGA1UEAxMEdGVzdDAe\n\rFw0yMzA5MDQxNTU5MTZaFw0yODA5MDQxNTU5MTZaMA8xDTALBgNVBAMTBHRlc3QwggEiMA0GCSqG\n\rSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCqFhV0LjNyO1/7rp5HGaY+dnSttzN4yDliM8DSbMjMpwI3\n\roQXOG1p4fCxjbzZrLd9Hc+BihVHBEV4kzfVTAJ6rN1ptH0NOCk5Kri+6HJUXKgErOVFzJl+UCdJa\n\r7Zxj+lp8nVHGyhxfE5NHHE+rfGcy33auu5Emq+tqouMLf7imGaRzPoAotKgTaajSZkWog2JYzza6\n\rRaJ+LXTBgjuQae1IF3SiUIQbAO8KzTe+tOgpDdAxBP9c5gNoi84FH4Smmkv/6gmaxerf2ICn0Mdm\n\rMC1jZu7ZwDhtCS8kBMXlHN09X6sPn47pj25ycwoZTdar1M3L8KuZ8PLThq+WJ9UC9qiJAgMBAAGj\n\rIDAeMAsGA1UdDwQEAwIEsDAPBgNVHREECDAGggR0ZXN0MA0GCSqGSIb3DQEBCwUAA4IBAQCPAVwc\n\roZXt0UXilRJd9yfmdKvvG8hui3bFgZn9YZx6zV1A9PqX8B/+udSonXZ6LW8XuzZajEXy85BtFbU2\n\rqIVrp3b2UcNyLtn0NenurvCj6bmFZP+QjIKk/MUpYiFzqVShLcwYigoDrVfcruM9Fa++qbRoxb9/\n\rFEGdw5W/1odGmvhbc7CynfJFOCHtO1F5HiEvJ1ciBhEDoA2PHHtuBpEw9GF9aAidHB7XIUgrzfOh\n\ryYE+pDCQq/CdG0Hdek4o/vJ9uK5Q9/Mc9yUcuwzkotukjQ+8rg5VQoQQ8UqdFzL1++pI9ufCzbC1\n\r6ItzyXTerkfZ3twjBqb3ch8GBNZtK4la"
+                    }
+                },
+                AllowedGrantTypes = GrantTypes.Code,
+
+                RedirectUris = { "https://localhost:7123/signin-codeflowjarandprivatekeyjwt" },
+                FrontChannelLogoutUri = "https://localhost:7123/signout-oidc",
+                PostLogoutRedirectUris = { "https://localhost:7123/signout-callback-oidc" },
+
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,

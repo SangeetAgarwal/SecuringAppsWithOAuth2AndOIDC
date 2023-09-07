@@ -44,7 +44,7 @@ builder.Services.AddAccessTokenManagement();
 // IDP client
 builder.Services.AddHttpClient("IdpClient", client =>
 {
-    client.BaseAddress = new Uri(identityServerConfiguration.BaseUrl);
+    client.BaseAddress = new Uri(identityServerConfiguration.BaseUrl.ToLower());
 });
 
 builder.Services.AddHttpClient("ApiClientPrivateKeyJwt", client =>
@@ -58,6 +58,7 @@ builder.Services.AddSingleton<IAuthorizationRequestSigner, AuthorizationRequestS
 
 builder.Services.AddTransient<WebClientJwtEvent>();
 builder.Services.AddTransient<WebClientJAREvent>();
+builder.Services.AddTransient<WebClientJwtAndJAREvent>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -71,7 +72,7 @@ builder.Services.AddAuthentication(options =>
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.Authority = identityServerConfiguration.BaseUrl;
+    options.Authority = identityServerConfiguration.BaseUrl.ToLower();
     options.ResponseType = "code";
     options.ClientId = clientConfiguration.ClientId;
     options.ClientSecret = clientConfiguration.ClientSecret;
@@ -112,7 +113,7 @@ builder.Services.AddAuthentication(options =>
 .AddOpenIdConnect("CodeFlowWithPrivateKeyJWTScheme", options =>
 {
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.Authority = identityServerConfiguration.BaseUrl;
+    options.Authority = identityServerConfiguration.BaseUrl.ToLower();
     options.CallbackPath = "/signin-codeflowprivatekeyjwt";
     options.ResponseType = "code";
 
@@ -148,7 +149,7 @@ builder.Services.AddAuthentication(options =>
 .AddOpenIdConnect("CodeFlowWithJARScheme", options =>
 {
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.Authority = identityServerConfiguration.BaseUrl;
+    options.Authority = identityServerConfiguration.BaseUrl.ToLower();
     options.ClientId = "notesmvcappjar";
     options.ClientSecret = clientConfiguration.ClientSecret;
     options.CallbackPath = "/signin-codeflowjar";
@@ -176,6 +177,37 @@ builder.Services.AddAuthentication(options =>
     };
 
     options.EventsType = typeof(WebClientJAREvent);
+})
+.AddOpenIdConnect("CodeFlowWithPrivateKeyJWTAndJARScheme", options =>
+{
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.Authority = identityServerConfiguration.BaseUrl.ToLower();
+    options.CallbackPath = "/signin-codeflowjarandprivatekeyjwt";
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+    options.GetClaimsFromUserInfoEndpoint = true;
+    options.ClientId = "notesmvcappjwtandjar";
+
+     options.Scope.Add("roles");
+    options.Scope.Add("subscriberSince");
+    options.Scope.Add("notesapi.write");
+    options.Scope.Add("notesapi.read");
+    options.Scope.Add("notesapi.fullaccess");
+
+    options.ClaimActions.Remove("aud");
+    options.ClaimActions.DeleteClaim("sid");
+    options.ClaimActions.DeleteClaim("idp");
+
+    options.ClaimActions.MapJsonKey("role", "role");
+    options.ClaimActions.MapJsonKey("subscriberSince", "subscriberSince");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "role",
+        NameClaimType = "given_name"
+    };
+
+    options.EventsType = typeof(WebClientJwtAndJAREvent);
 });
 
 builder.Services.AddAuthorization(authorizationOptions =>
