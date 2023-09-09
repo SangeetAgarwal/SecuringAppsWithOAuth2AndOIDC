@@ -4,6 +4,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 //using Azure.Security.KeyVault.Certificates;
 using Duende.IdentityServer;
+using Duende.IdentityServer.Services;
 using MakeBitByte.IDP.Configuration;
 using MakeBitByte.IDP.DbContexts;
 using MakeBitByte.IDP.Entities;
@@ -139,7 +140,8 @@ internal static class HostingExtensions
             //     options.EnableTokenCleanup = true;
             // });
         // .AddSigningCredential(signingCertificate);
-
+        
+        builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>();
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {

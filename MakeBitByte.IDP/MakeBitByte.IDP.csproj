@@ -23,5 +23,6 @@
   
   <ItemGroup>
     <Folder Include="keys\" />
+    <Folder Include="Certificates\" />
   </ItemGroup>
 </Project>
