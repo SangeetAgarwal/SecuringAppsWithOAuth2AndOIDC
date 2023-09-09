@@ -10,7 +10,8 @@ using Notes.MvcApp.Services;
 
 namespace Notes.MvcApp.Controllers
 {
-    [Authorize(AuthenticationSchemes = "CodeFlowWithPrivateKeyJWTAndJARScheme")]
+    [Authorize(AuthenticationSchemes = "CodeFlowWithTokenEncryptionScheme")]
+    // [Authorize(AuthenticationSchemes = "CodeFlowWithPrivateKeyJWTAndJARScheme")]
     // [Authorize(AuthenticationSchemes = "CodeFlowWithJARScheme")]
     // [Authorize(AuthenticationSchemes = "CodeFlowWithPrivateKeyJWTScheme")]
     // [Authorize]

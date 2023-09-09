@@ -173,6 +173,27 @@ public static class Config
                     "notesapi.write",
                     "subscriberSince"
                 },
+            },
+            new Client
+            {
+                ClientId = "notesmvcapptokenencryption",
+                ClientSecrets = { new Secret("secret".Sha256()) },
+                AllowedGrantTypes = GrantTypes.Code,
+
+                RedirectUris = { "https://localhost:7123/signin-codeflowtokenencryption" },
+                FrontChannelLogoutUri = "https://localhost:7123/signout-oidc",
+                PostLogoutRedirectUris = { "https://localhost:7123/signout-callback-oidc" },
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "roles",
+                    "notesapi.fullaccess",
+                    "notesapi.read",
+                    "notesapi.write",
+                    "subscriberSince"
+                },
             }
         };
 }

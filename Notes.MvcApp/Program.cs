@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -188,7 +190,7 @@ builder.Services.AddAuthentication(options =>
     options.GetClaimsFromUserInfoEndpoint = true;
     options.ClientId = "notesmvcappjwtandjar";
 
-     options.Scope.Add("roles");
+    options.Scope.Add("roles");
     options.Scope.Add("subscriberSince");
     options.Scope.Add("notesapi.write");
     options.Scope.Add("notesapi.read");
@@ -208,6 +210,38 @@ builder.Services.AddAuthentication(options =>
     };
 
     options.EventsType = typeof(WebClientJwtAndJAREvent);
+})
+.AddOpenIdConnect("CodeFlowWithTokenEncryptionScheme", options =>
+{
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.Authority = identityServerConfiguration.BaseUrl.ToUpper();
+    options.ClientId = "notesmvcapptokenencryption";
+    options.ClientSecret = "secret";
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+    options.GetClaimsFromUserInfoEndpoint = true;
+    options.CallbackPath = "/signin-codeflowtokenencryption";
+
+    options.Scope.Add("roles");
+    options.Scope.Add("subscriberSince");
+    options.Scope.Add("notesapi.write");
+    options.Scope.Add("notesapi.read");
+    options.Scope.Add("notesapi.fullaccess");
+
+    options.ClaimActions.Remove("aud");
+    options.ClaimActions.DeleteClaim("sid");
+    options.ClaimActions.DeleteClaim("idp");
+
+    options.ClaimActions.MapJsonKey("role", "role");
+    options.ClaimActions.MapJsonKey("subscriberSince", "subscriberSince");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "role",
+        NameClaimType = "given_name",
+        TokenDecryptionKey = new X509SecurityKey(
+            new X509Certificate2("Certificates/test.pfx", "P@ssw0rd"))
+    };
 });
 
 builder.Services.AddAuthorization(authorizationOptions =>
