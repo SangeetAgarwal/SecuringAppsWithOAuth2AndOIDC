@@ -49,12 +49,6 @@ builder.Services.AddHttpClient("IdpClient", client =>
     client.BaseAddress = new Uri(identityServerConfiguration.BaseUrl.ToLower());
 });
 
-builder.Services.AddHttpClient("ApiClientPrivateKeyJwt", client =>
-{
-    client.BaseAddress = new Uri(notesApiConfiguration.BaseUrl ?? throw new ApplicationException($"valid base url not supplied for {nameof(notesApiConfiguration)}"));
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-});
-
 builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<IAuthorizationRequestSigner, AuthorizationRequestSigner>();
 
