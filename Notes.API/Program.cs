@@ -6,6 +6,7 @@ using Notes.Api.Authorization;
 using Notes.Api.ClaimsPrincipal;
 using Notes.Api.Configuration;
 using Notes.API.Datalayer.Configuration;
+using Notes.Api.DPoP;
 using Notes.API.Servicelayer.Configuration;
 
 
@@ -91,6 +92,7 @@ builder.Services.AddAuthorization(authorizationOptions =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.ConfigureDPoPTokensForScheme(JwtBearerDefaults.AuthenticationScheme);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

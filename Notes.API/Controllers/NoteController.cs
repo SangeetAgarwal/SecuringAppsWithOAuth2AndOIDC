@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Notes.API.Common.ApiModels;
 using Notes.API.Common.Interfaces.Servicelayer;
 using Notes.API.Datalayer.DbSet;
+using Notes.Api.DPoP;
 
 namespace Notes.API.Controllers
 {
@@ -18,8 +19,10 @@ namespace Notes.API.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<IEnumerable<NoteApiModel>>> GetNotes()
         {
+            var proofToken = Request.GetDPoPProofToken();
+            if (proofToken == null) return BadRequest();
+            
             var notes = await DatalayerService.GetNotesAsync();
-
             return Ok(notes);
         }
 
@@ -28,6 +31,9 @@ namespace Notes.API.Controllers
         [Authorize("MustOwnResource")]
         public async Task<ActionResult<NoteApiModel>> GetNote([FromRoute] Guid id)
         {
+            var proofToken = Request.GetDPoPProofToken();
+            if (proofToken == null) return BadRequest();
+
             var note = await DatalayerService.GetNoteAsync(id);
 
             return Ok(note);
@@ -37,6 +43,10 @@ namespace Notes.API.Controllers
         [HttpDelete("DeleteNote/{id:guid}")]
         public async Task<ActionResult> DeleteNote([FromRoute] Guid id)
         {
+
+            var proofToken = Request.GetDPoPProofToken();
+            if (proofToken == null) return BadRequest();
+
             await DatalayerService.DeleteNoteAsync(id);
 
             return Ok();
@@ -46,8 +56,12 @@ namespace Notes.API.Controllers
         [Authorize(Policy = "ClientAppCanWrite")]
         public async Task<ActionResult> AddNote([FromBody] NoteApiModel note)
         {
+
+            var proofToken = Request.GetDPoPProofToken();
+            if (proofToken == null) return BadRequest();
+
             if (!ModelState.IsValid) return BadRequest(ModelState);
-           
+
             await DatalayerService.AddNoteAsync(note);
 
             return Ok();
@@ -56,8 +70,11 @@ namespace Notes.API.Controllers
         [HttpPut("UpdateNote/{id:guid}")]
         [Authorize(Policy = "ClientAppCanWrite")]
         [Authorize("MustOwnResource")]
-        public async Task<ActionResult> UpdateNote([FromRoute]Guid id, [FromBody] NoteApiModel note)
+        public async Task<ActionResult> UpdateNote([FromRoute] Guid id, [FromBody] NoteApiModel note)
         {
+            var proofToken = Request.GetDPoPProofToken();
+            if (proofToken == null) return BadRequest();
+
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             await DatalayerService.UpdateNoteAsync(note);
@@ -70,7 +87,11 @@ namespace Notes.API.Controllers
         [HttpPost("Search")]
         public async Task<ActionResult<IEnumerable<NoteApiModel>>> Search([FromBody] string searchText)
         {
-            var notes =  await DatalayerService.Search(searchText);
+
+            var proofToken = Request.GetDPoPProofToken();
+            if (proofToken == null) return BadRequest();
+
+            var notes = await DatalayerService.Search(searchText);
 
             return Ok(notes);
         }

@@ -114,6 +114,8 @@ internal static class HostingExtensions
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddInMemoryApiResources(Config.ApiResources)
+
+
             .AddJwtBearerClientAuthentication();
             // .AddConfigurationStore(options =>
             // {
@@ -141,7 +143,8 @@ internal static class HostingExtensions
             // });
         // .AddSigningCredential(signingCertificate);
         
-        builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>();
+
+        // builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>();
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {

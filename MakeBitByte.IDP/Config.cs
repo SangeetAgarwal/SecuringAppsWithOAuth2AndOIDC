@@ -149,7 +149,7 @@ public static class Config
                 ClientId = "notesmvcappjwtandjar",
                 RequireRequestObject = true,
                 // Use below for verifying signed JAR and client auth via private key JWT
-                ClientSecrets =                
+                ClientSecrets =
                 {
                     new Secret
                     {
@@ -174,6 +174,7 @@ public static class Config
                     "subscriberSince"
                 },
             },
+            // code flow + PKCE + token encryption
             new Client
             {
                 ClientId = "notesmvcapptokenencryption",
@@ -181,6 +182,30 @@ public static class Config
                 AllowedGrantTypes = GrantTypes.Code,
 
                 RedirectUris = { "https://localhost:7123/signin-codeflowtokenencryption" },
+                FrontChannelLogoutUri = "https://localhost:7123/signout-oidc",
+                PostLogoutRedirectUris = { "https://localhost:7123/signout-callback-oidc" },
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "roles",
+                    "notesapi.fullaccess",
+                    "notesapi.read",
+                    "notesapi.write",
+                    "subscriberSince"
+                },
+            },
+            // code flow + PKCE + DPoP (Demonstrating proof of possession)
+            new Client
+            {
+                ClientId = "notesmvcappdpopcodeflow",
+                ClientSecrets = { new Secret("secret".Sha256())},
+                AllowedGrantTypes = GrantTypes.Code,
+
+                RequireDPoP = true,
+
+                RedirectUris = { "https://localhost:7123/signin-codeflowdpop" },
                 FrontChannelLogoutUri = "https://localhost:7123/signout-oidc",
                 PostLogoutRedirectUris = { "https://localhost:7123/signout-callback-oidc" },
 

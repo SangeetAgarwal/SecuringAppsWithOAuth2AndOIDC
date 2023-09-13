@@ -1,19 +1,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
-using AutoMapper;
-using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Notes.MvcApp.Configuration;
+using Notes.MvcApp.Helpers;
 using Notes.MvcApp.Notes.Api.Configuration;
 using Notes.MvcApp.OidcEvents;
 using Notes.MvcApp.Services.Configuration;
 using Notes.MvcApp.Services.OidcServices;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +28,7 @@ builder.Configuration.GetSection(nameof(ClientConfiguration))
     .Bind(clientConfiguration);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
+builder.Services.AddControllersWithViews(); 
 builder.Services.AddNotesService();
 
 builder.Services.AddSingleton<IdentityServerConfiguration>(_ => identityServerConfiguration);
@@ -41,18 +37,10 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-builder.Services.AddAccessTokenManagement();
-
 // IDP client
 builder.Services.AddHttpClient("IdpClient", client =>
 {
     client.BaseAddress = new Uri(identityServerConfiguration.BaseUrl.ToLower());
-});
-
-builder.Services.AddHttpClient("ApiClientPrivateKeyJwt", client =>
-{
-    client.BaseAddress = new Uri(notesApiConfiguration.BaseUrl ?? throw new ApplicationException($"valid base url not supplied for {nameof(notesApiConfiguration)}"));
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
 builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
@@ -65,7 +53,8 @@ builder.Services.AddTransient<WebClientJwtAndJAREvent>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+    // options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = "CodeFlowWithDPopScheme";
 })
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
@@ -242,6 +231,44 @@ builder.Services.AddAuthentication(options =>
         TokenDecryptionKey = new X509SecurityKey(
             new X509Certificate2("Certificates/test.pfx", "P@ssw0rd"))
     };
+})
+.AddOpenIdConnect("CodeFlowWithDPopScheme", options =>
+{
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.Authority = identityServerConfiguration.BaseUrl.ToLower();
+    options.CallbackPath = "/signin-codeflowdpop";
+    options.ResponseType = "code";
+    options.GetClaimsFromUserInfoEndpoint = true;
+    options.ClientId = "notesmvcappdpopcodeflow";
+    options.ClientSecret = "secret";
+    options.SaveTokens = true;
+
+    options.Scope.Add("roles");
+    options.Scope.Add("subscriberSince");
+    options.Scope.Add("notesapi.write");
+    options.Scope.Add("notesapi.read");
+    options.Scope.Add("notesapi.fullaccess");
+
+    options.ClaimActions.Remove("aud");
+    options.ClaimActions.DeleteClaim("sid");
+    options.ClaimActions.DeleteClaim("idp");
+
+    options.ClaimActions.MapJsonKey("role", "role");
+    options.ClaimActions.MapJsonKey("subscriberSince", "subscriberSince");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "role",
+        NameClaimType = "given_name"
+    };
+});
+
+// Ensures any protocol requests to obtain access tokens from the token server will automatically include a DPoP proof
+// token created from the DPoPJsonWebKey
+builder.Services.AddOpenIdConnectAccessTokenManagement(options =>
+{ 
+    options.ChallengeScheme = "CodeFlowWithDPopScheme";
+    options.DPoPJsonWebKey = JwkHelper.GenerateJsonWebKey();
 });
 
 builder.Services.AddAuthorization(authorizationOptions =>
