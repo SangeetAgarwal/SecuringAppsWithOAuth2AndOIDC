@@ -1,6 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
+using Duende.Bff;
+using Duende.Bff.Yarp;
 using JavaScriptClient.Configuration;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +17,9 @@ builder.Configuration.GetSection(nameof(ClientConfiguration)).Bind(clientConfigu
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 
-builder.Services.AddBff();
+builder.Services.AddBff()
+    .AddRemoteApis();
+
 
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
@@ -28,16 +34,30 @@ builder.Services.AddAuthentication(options =>
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddOpenIdConnect("oidc", options =>
 {
-    options.Authority = identityServerConfiguration.BaseUrl;
+    options.Authority = identityServerConfiguration.BaseUrl.ToLower();
 
     options.ClientId = clientConfiguration.ClientId;
     options.ClientSecret = clientConfiguration.ClientSecret;
     options.ResponseType = "code";
-        
-    options.Scope.Add("api1");
-     //default, so no need to mention here again
-    options.Scope.Add("openid");
-    options.Scope.Add("profile");
+
+    options.Scope.Add("roles");
+    options.Scope.Add("subscriberSince");
+    options.Scope.Add("notesapi.write");
+    options.Scope.Add("notesapi.read");
+    options.Scope.Add("notesapi.fullaccess");
+
+    options.ClaimActions.Remove("aud");
+    options.ClaimActions.DeleteClaim("sid");
+    options.ClaimActions.DeleteClaim("idp");
+
+    options.ClaimActions.MapJsonKey("role", "role");
+    options.ClaimActions.MapJsonKey("subscriberSince", "subscriberSince");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "role",
+        NameClaimType = "given_name"
+    };
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
 
@@ -72,8 +92,12 @@ app.UseEndpoints(endpoints =>
 
     // proxy any call to local /remote to the actual remote api
     // passing the access token
-    endpoints.MapRemoteBffApiEndpoint("/remote", "https://locathost:6001")
-        .RequireAccessToken(Duende.Bff.TokenType.User);
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapRemoteBffApiEndpoint(
+                "/api/notes", "https://localhost:7094/api/Note/GetNotes")
+            .RequireAccessToken(TokenType.User);
+    });
 });
 
 

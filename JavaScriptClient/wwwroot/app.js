@@ -53,8 +53,12 @@ function login() {
 
 function logout() {
     if (userClaims) {
-        var logoutUrl = userClaims.find(claim => claim.type === 'bff:logout_url').value;
-        window.location = logoutUrl;
+        if (userClaims.find(claim => claim.type === 'bff:logout_url')) {
+            var logoutUrl = userClaims.find(claim => claim.type === 'bff:logout_url').value;
+            window.location = logoutUrl;
+        }
+        else 
+            window.location = "/bff/logout";
     }
     else {
         window.location = "/bff/logout";
@@ -84,4 +88,22 @@ async function localApi() {
 }
 
 async function remoteApi() {
+    var request = new Request("/api/notes", {
+        headers: new Headers({
+            "X-CSRF": '1'
+        })
+    });
+
+    try {
+
+        var response = await fetch(request);
+        if (response.ok) {
+            var notes = await response.json();
+            log('notes', notes);
+        } else if (response.status === 401) {
+            log('access denied');
+        }
+    } catch (ex) {
+
+    }
 }
