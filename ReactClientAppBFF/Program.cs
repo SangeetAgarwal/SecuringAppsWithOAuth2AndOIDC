@@ -20,9 +20,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddBff()
     .AddRemoteApis();
 
-
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -82,8 +80,7 @@ app.UseAuthorization();
 //adds BFF support to the local APIs. This includes anti-forgery
 //protection as well as suppressing login redirects on authentication failures and
 //instead returning 401 and 403 status codes under the appropriate circumstances.
-app.MapControllers()
-.AsBffApiEndpoint();
+app.MapControllers().AsBffApiEndpoint();
 
 app.MapBffManagementEndpoints();
 

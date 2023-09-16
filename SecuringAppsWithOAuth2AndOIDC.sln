@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MakeBitByte.IDP", "MakeBitB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JavaScriptClient", "JavaScriptClient\JavaScriptClient.csproj", "{F71DD8EE-DDBF-43CF-9C05-3AEF0D83F59E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactClientAppBFF", "ReactClientAppBFF\ReactClientAppBFF.csproj", "{3E8859AC-33BB-4FF4-B935-CFBAD684610D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F71DD8EE-DDBF-43CF-9C05-3AEF0D83F59E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F71DD8EE-DDBF-43CF-9C05-3AEF0D83F59E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F71DD8EE-DDBF-43CF-9C05-3AEF0D83F59E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E8859AC-33BB-4FF4-B935-CFBAD684610D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E8859AC-33BB-4FF4-B935-CFBAD684610D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E8859AC-33BB-4FF4-B935-CFBAD684610D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E8859AC-33BB-4FF4-B935-CFBAD684610D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

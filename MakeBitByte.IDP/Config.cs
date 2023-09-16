@@ -245,6 +245,30 @@ public static class Config
                     "notesapi.write",
                     "subscriberSince"
                 },
+            },
+            new Client
+            {
+                ClientId = "reactclientappbff",
+                ClientSecrets = { new Secret("secret".Sha256()) },
+
+                AllowedGrantTypes = GrantTypes.Code,
+                
+                // where to redirect to after login
+                RedirectUris = { "https://localhost:5003/signin-oidc" },
+
+                // where to redirect to after logout
+                PostLogoutRedirectUris = { "https://localhost:5003/signout-callback-oidc" },
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "roles",
+                    "notesapi.fullaccess",
+                    "notesapi.read",
+                    "notesapi.write",
+                    "subscriberSince"
+                },
             }
         };
 }
