@@ -90,7 +90,7 @@ app.MapBffManagementEndpoints();
 // proxy any call to local /remote to the actual remote api
 // passing the access token
 app.MapRemoteBffApiEndpoint(
-        "/api/notes", "https://localhost:7094/api/Note/GetNotes")
+        "/api", "https://localhost:7094/api")
     .RequireAccessToken(TokenType.User);
 
 app.Run();

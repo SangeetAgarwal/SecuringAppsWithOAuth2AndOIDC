@@ -254,10 +254,18 @@ public static class Config
                 AllowedGrantTypes = GrantTypes.Code,
                 
                 // where to redirect to after login
-                RedirectUris = { "https://localhost:5003/signin-oidc" },
+                RedirectUris =
+                {
+                    "https://localhost:7249/signin-oidc",
+                    "https://localhost:5173/signin-oidc"
+                },
 
                 // where to redirect to after logout
-                PostLogoutRedirectUris = { "https://localhost:5003/signout-callback-oidc" },
+                PostLogoutRedirectUris =
+                {
+                    "https://localhost:7249/signout-callback-oidc",
+                    "https://localhost:5173/signout-callback-oidc"
+                },
 
                 AllowedScopes =
                 {

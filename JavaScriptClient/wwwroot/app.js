@@ -14,14 +14,15 @@
 };
 
 // claims are global
-let userClaims = null
+let userClaims = null;
 
 async function startup() {
-    var req = new Request("/bff/user", {
-        headers: new Headers({
-            'X-CSRF': '1'
-        })
-    })
+    var req = new Request("/bff/user",
+        {
+            headers: new Headers({
+                'X-CSRF': '1'
+            })
+        });
 
     try {
         var resp = await fetch(req);
@@ -88,7 +89,7 @@ async function localApi() {
 }
 
 async function remoteApi() {
-    var request = new Request("/api/notes", {
+    var request = new Request("/api/Note/GetNotes", {
         headers: new Headers({
             "X-CSRF": '1'
         })
