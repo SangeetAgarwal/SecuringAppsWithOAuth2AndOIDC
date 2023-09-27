@@ -29,12 +29,23 @@ export default defineConfig({
         target: "https://localhost:7249",
         secure: false,
       },
-      "/remote-api": {
-        target: "https://localhost:7249/api",
+      "/api/notes": {
+        target: "https://localhost:7249",
         secure: false,
+        configure: (proxy, _options) => {
+          proxy.on("error", (err, _req, _res) => {
+            console.log("proxy error", err);
+          });
+          proxy.on("proxyReq", (proxyReq, req, _res) => {
+            console.log("Sending Request to the Target:", req.method, req.url);
+          });
+          proxy.on("proxyRes", (proxyRes, req, _res) => {
+            console.log("Received Response from the Target:", proxyRes.statusCode, req.url);
+          });
+        },
       },
-      "/local-api": {
-        target: "https://localhost:7249/local/identity",
+      "/local/identity": {
+        target: "https://localhost:7249",
         secure: false,
       },
     },
