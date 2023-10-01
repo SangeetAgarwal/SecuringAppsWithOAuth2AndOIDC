@@ -11,7 +11,7 @@
 ## Setup
 
 1.  Clone the repository.
-2.  Open the solution in Visual Studio and ensure that `Multiple startup projects` radio button is selected and that all the projects are selected as Start.
+2.  Open the solution in Visual Studio and ensure that `Multiple startup projects` radio button is selected and that all the projects have the `Start` action.
 3.  The user dB database must be created and seeded. To do this, open the Package Manager Console and ensure that the default project is set to `MakeBitByte.IDP`.
     Then run the following command - `update-database -Context UserDbContext`
 
@@ -26,7 +26,7 @@ The default users are:
 
 For this, go to the `NoteController` in the `Notes.MvcApp` project and uncomment the `[Authorize]` attribute. This should be the only `Authorize` attribute that should be uncommented. This will then cause the `.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => { ... })` to be called.
 
-Also, ensure that the default challege scheme in the `program.cs` file of the `Notes.MvcApp` is set to ` options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;` within the `builder.Services.AddAuthentication(options => { ... })` method. This will ensure that the `.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => { ... })` handler is used for the challenge.
+Also, ensure that the default challege scheme in the `program.cs` file of the `Notes.MvcApp` is set to ` options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme` within the `builder.Services.AddAuthentication(options => { ... })` method. This will ensure that the `.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => { ... })` handler is used for the challenge.
 
 ## Authentication with Private Key JWT
 
@@ -46,15 +46,15 @@ As before, you'll only want to uncomment `[Authorize(AuthenticationSchemes = "Co
 
 You'll also want to make sure the corresponding default challenge scheme is set to `CodeFlowWithTokenEncryptionScheme` in the `program.cs` file of the `Notes.MvcApp` project.
 
-Also, make sure `builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>();` is uncommented in the `HostingExtensions.cs` file of the `MakeBitByte.IDP` project.
+Also, make sure `builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>()` is uncommented in the `HostingExtensions.cs` file of the `MakeBitByte.IDP` project.
 
 ## Demonstrate proof of possession (DPoP)
 
 As before, you'll only want to uncomment `[Authorize(AuthenticationSchemes = "CodeFlowWithDPoPScheme")]` in the `NoteController` in the `Notes.MvcApp` project. This will then cause the `.AddOpenIdConnect("CodeFlowWithDPoPScheme", options => { ... })` to be called. The corresponding challenge scheme should be set to `CodeFlowWithDPoPScheme` in the `program.cs` file of the `Notes.MvcApp` project.
 
-Make sure `builder.Services.ConfigureDPoPTokensForScheme(JwtBearerDefaults.AuthenticationScheme);` in the `program.cs` file of the `Notes.API` project is uncommented.
+Make sure `builder.Services.ConfigureDPoPTokensForScheme(JwtBearerDefaults.AuthenticationScheme)` in the `program.cs` file of the `Notes.API` project is uncommented.
 
-You'll also want to uncomment the following lines of code in the `NoteController` which is housed in the `Notes.API` project:
+You'll also want to uncomment the following lines of code in the `NoteController` for all the actions. This will ensure that the DPoP token is validated. You'll find the `NoteController` in the `Notes.API` project.
 
 ```csharp
   var proofToken = Request.GetDPoPProofToken();
