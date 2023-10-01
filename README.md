@@ -1,7 +1,7 @@
 <div align="center">
   <h1 align="center">Working app that demonstrates the various flows in OpenId 🚀</a></h1>
   <p align="left">
-    This repository uses an MVC app which then communicates with an API to demonstrate the various flows in OpenId. It uses Duende's Identity Server as the IDP. You'll also see a React app which uses the Backend for Frontend (BFF) pattern to communicate with the API along with a a pure API client which again uses the BFF pattern to communicate with the API.
+    This repository uses an MVC app which then communicates with an API to demonstrate the various flows in OpenId. It uses Duende's Identity Server as the IDP. You'll also see a React app which uses the Backend for Frontend (BFF) pattern to communicate with the API along with a a pure Javascript client which again uses the BFF pattern to communicate with the API.
   </p>
 <p align="left">
  
@@ -24,9 +24,9 @@ The default users are:
 
 ## Auth code with PKCE flow
 
-For this, go to the `NoteController` in the `Notes.MvcApp` project and uncomment the `[Authorize]` attribute. This should be the only `Authorize` attribute that should be uncommented. This will then cause the `.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => { ... })` to be called. This will then cause the `Auth code with PKCE` flow to be used.
+For this, go to the `NoteController` in the `Notes.MvcApp` project and uncomment the `[Authorize]` attribute. This should be the only `Authorize` attribute that should be uncommented. This will then cause the `.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => { ... })` to be called.
 
-Also, ensure that the default challege scheme in the `program.cs` file of the `Notes.MvcApp` is set to ` options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;` within the `builder.Services.AddAuthentication(options => { ... })` method. This will ensure that the `.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => { ... })` handler is used for the challenge lower down in the code.
+Also, ensure that the default challege scheme in the `program.cs` file of the `Notes.MvcApp` is set to ` options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;` within the `builder.Services.AddAuthentication(options => { ... })` method. This will ensure that the `.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => { ... })` handler is used for the challenge.
 
 ## Authentication with Private Key JWT
 
@@ -36,7 +36,7 @@ Also, ensure that the default challege scheme in the `program.cs` file of the `N
 
 ## JAR or JWT secured authorization request with client secret
 
-For this, go to the `NoteController` in the `Notes.MvcApp` project and uncomment the `    [Authorize(AuthenticationSchemes = "CodeFlowWithJARScheme")]` attribute. This should be the only `Authorize` attribute that should be uncommented. This will then cause the `.AddOpenIdConnect("CodeFlowWithJARScheme", options => { ... })` to be called.
+For this, go to the `NoteController` in the `Notes.MvcApp` project and uncomment the `[Authorize(AuthenticationSchemes = "CodeFlowWithJARScheme")]` attribute. This should be the only `Authorize` attribute that should be uncommented. This will then cause the `.AddOpenIdConnect("CodeFlowWithJARScheme", options => { ... })` to be called.
 
 As before you'll want to make sure the corresponding default challenge scheme is set to `CodeFlowWithJARScheme` in the `program.cs` file of the `Notes.MvcApp` project.
 
@@ -44,7 +44,7 @@ As before you'll want to make sure the corresponding default challenge scheme is
 
 As before, you'll only want to uncomment `[Authorize(AuthenticationSchemes = "CodeFlowWithTokenEncryptionScheme")]` in the `NoteController` in the `Notes.MvcApp` project. This will then cause the `.AddOpenIdConnect("CodeFlowWithTokenEncryptionScheme", options => { ... })` to be called.
 
-You'll want to make sure the corresponding default challenge scheme is set to `CodeFlowWithTokenEncryptionScheme` in the `program.cs` file of the `Notes.MvcApp` project.
+You'll also want to make sure the corresponding default challenge scheme is set to `CodeFlowWithTokenEncryptionScheme` in the `program.cs` file of the `Notes.MvcApp` project.
 
 Also, make sure `builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>();` is uncommented in the `HostingExtensions.cs` file of the `MakeBitByte.IDP` project.
 
@@ -54,7 +54,7 @@ As before, you'll only want to uncomment `[Authorize(AuthenticationSchemes = "Co
 
 Make sure `builder.Services.ConfigureDPoPTokensForScheme(JwtBearerDefaults.AuthenticationScheme);` in the `program.cs` file of the `Notes.API` project is uncommented.
 
-You'll also want to uncomment
+You'll also want to uncomment the following lines of code in the `NoteController` which is housed in the `Notes.API` project:
 
 ```csharp
   var proofToken = Request.GetDPoPProofToken();
@@ -64,4 +64,4 @@ You'll also want to uncomment
 ## Backend for Frontend (BFF) pattern
 
 Navigate to the `ReactClientApp` folder and then `npm install` followed by `npm run dev`
-You should now be able to login and see the notes.
+You should now be able to login and see the notes being retuned from the API.
