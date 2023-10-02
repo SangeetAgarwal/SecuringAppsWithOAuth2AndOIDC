@@ -25,6 +25,7 @@ export default function App() {
           <div>Loading...</div>
         ) : (
           <div>
+            {notes.data && notes.data.length > 0 && <h1>Notes</h1>}
             {notes.data?.map((note: { id: string; title: string; description: string; content: string }) => (
               <div key={note.id}>
                 <pre>{JSON.stringify(note, null, 2)}</pre>
