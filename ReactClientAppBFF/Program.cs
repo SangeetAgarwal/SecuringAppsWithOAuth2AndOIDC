@@ -4,6 +4,7 @@ using Duende.Bff.Yarp;
 using JavaScriptClient.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,11 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignOutScheme = "oidc";
 
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.Cookie.Name = "__ReactSPA";
+    options.Cookie.SameSite = SameSiteMode.Strict;
+})
 .AddOpenIdConnect("oidc", options =>
 {
     options.Authority = identityServerConfiguration.BaseUrl.ToLower();
@@ -58,7 +63,6 @@ builder.Services.AddAuthentication(options =>
     };
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
-
 });
 
 var app = builder.Build();
