@@ -8,6 +8,7 @@ interface AuthUser {
   email: string;
   sub: string;
   roles: string[];
+  bffLogoutUrl: string;
 }
 
 const config = {
@@ -41,7 +42,8 @@ export function useAuthUser() {
       const email = claims.find((c) => c.type === "email")?.value ?? "";
       const sub = claims.find((c) => c.type === "sub")?.value ?? "";
       const roles = claims.filter((c) => c.type === "role").map((c) => c.value);
-      setUser({ given_name, family_name, email, sub, roles });
+      const bffLogoutUrl = claims.find((c) => c.type === "bff:logout_url")?.value ?? "";
+      setUser({ given_name, family_name, email, sub, roles, bffLogoutUrl });
     }
   }, [claims]);
   return { isLoading, error, claims, user };
