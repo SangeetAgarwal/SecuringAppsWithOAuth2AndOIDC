@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import basicSsl from "@vitejs/plugin-basic-ssl";
+import mkcert from "vite-plugin-mkcert";
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), basicSsl()],
+  plugins: [react(), mkcert()],
   server: {
+    https: true,
     proxy: {
       "/bff": {
         target: "https://localhost:7249",
