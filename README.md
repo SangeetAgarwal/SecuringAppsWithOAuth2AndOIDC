@@ -66,4 +66,4 @@ You'll also want to uncomment the following lines of code in the `NoteController
 Navigate to the `ReactClientApp` folder and then `npm install` followed by `npm run dev`
 You should now be able to login and see the notes being retuned from the API.
 
-Added a [blog post](https://www.makebitbyte.com/blog/lets-make-our-spa-more-secure-by-setting-up-a-net-bff-with-duende) which explains how the BFF pattern works while securing a react front end app.
+Added a [blog post](https://www.makebitbyte.com/blog/secure-spa-react-bff-duende) which explains how the BFF pattern works while securing a react front end app.
