@@ -17,6 +17,7 @@ namespace Notes.API.Controllers
 
         [HttpGet("GetNotes")]
         [Produces("application/json")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<NoteApiModel>>> GetNotes()
         {
             //var proofToken = Request.GetDPoPProofToken();
