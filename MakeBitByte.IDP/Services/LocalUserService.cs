@@ -135,6 +135,13 @@ namespace MakeBitByte.IDP.Services
             userToAdd.SecurityCodeExpiration = DateTime.UtcNow.AddHours(1);
             userToAdd.Active = false;
 
+            // hash and salt the password
+            /* https://github.com/dotnet/AspNetCore/blob/v6.0.4/src/Identity/Extensions.Core/src/PasswordHasher.cs
+             In the default implementation Microsoft derives a salt randomly and it will concatenate
+             this salt with hashed password (Password already being hashed with that salt)
+             In verification it will separate this 128-bit salt and does validation against hashed
+             password again with the same salt.
+            */
             userToAdd.Password = _passwordHasher.HashPassword(userToAdd, password);
 
             _context.Users.Add(userToAdd);

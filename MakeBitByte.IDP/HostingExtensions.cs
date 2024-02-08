@@ -110,39 +110,40 @@ internal static class HostingExtensions
             })
             .AddProfileService<LocalUserProfileService>()
 
-            .AddInMemoryIdentityResources(Config.IdentityResources)
-            .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Config.Clients)
-            .AddInMemoryApiResources(Config.ApiResources)
+            //.AddInMemoryIdentityResources(Config.IdentityResources)
+            //.AddInMemoryApiScopes(Config.ApiScopes)
+            //.AddInMemoryClients(Config.Clients)
+            //.AddInMemoryApiResources(Config.ApiResources)
 
 
-            .AddJwtBearerClientAuthentication();
-            // .AddConfigurationStore(options =>
-            // {
-            //     options.ConfigureDbContext = optionsBuilder =>
-            //     {
-            //         optionsBuilder.UseSqlServer(identityConfiguration.IdentityServerDbConnectionString,
-            //             sqlServerOptionsAction =>
-            //             {
-            //                 sqlServerOptionsAction.MigrationsAssembly(migrationsAssembly);
-            //             });
-            //     };
-            // })
-            // //.AddConfigurationStoreCache()
-            // .AddOperationalStore(options =>
-            // {
-            //     options.ConfigureDbContext = optionsBuilder =>
-            //     {
-            //         optionsBuilder.UseSqlServer(identityConfiguration.IdentityServerDbConnectionString,
-            //             sqlServerDbContextOptionsBuilder =>
-            //             {
-            //                 sqlServerDbContextOptionsBuilder.MigrationsAssembly(migrationsAssembly);
-            //             });
-            //     };
-            //     options.EnableTokenCleanup = true;
-            // });
-        // .AddSigningCredential(signingCertificate);
-        
+            .AddJwtBearerClientAuthentication()
+            .AddConfigurationStore(options =>
+            {
+                options.ConfigureDbContext = optionsBuilder =>
+                {
+                    optionsBuilder.UseSqlServer(identityConfiguration.IdentityServerDbConnectionString,
+                        sqlServerOptionsAction =>
+                        {
+                            sqlServerOptionsAction.MigrationsAssembly(migrationsAssembly);
+                        });
+                };
+            })
+        //.AddConfigurationStoreCache()
+            .AddOperationalStore(options =>
+            {
+                options.ConfigureDbContext = optionsBuilder =>
+                {
+                    optionsBuilder.UseSqlServer(identityConfiguration.IdentityServerDbConnectionString,
+                        sqlServerDbContextOptionsBuilder =>
+                        {
+                            sqlServerDbContextOptionsBuilder.MigrationsAssembly(migrationsAssembly);
+                        });
+                };
+                options.EnableTokenCleanup = true;
+            })
+            //.AddSigningCredential(signingCertificate);
+            .AddDeveloperSigningCredential();
+            
 
         // builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>();
 

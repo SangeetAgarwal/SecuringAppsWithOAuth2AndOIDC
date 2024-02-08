@@ -20,9 +20,9 @@ namespace MakeBitByte.IDP.Services
 
             switch (context.Caller)
             {
-                //  case IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken:
-                //  case IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken:
-                //  case IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken:
+                // case IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken:
+                // case IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken:
+                // case IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint:
                 default:
                     var subjectId = context.Subject.GetSubjectId();
                     var userClaims = await _localUserService.GetUserClaimsBySubjectAsync(subjectId);

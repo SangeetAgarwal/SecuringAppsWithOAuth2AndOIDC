@@ -13,7 +13,7 @@ namespace MakeBitByte.IDP.Services
     public class EncryptedTokenCreationService : DefaultTokenCreationService
     {
         public EncryptedTokenCreationService(
-            ISystemClock clock,
+            IClock clock,
             IKeyMaterialService keys,
             IdentityServerOptions options,
             ILogger<DefaultTokenCreationService> logger)
