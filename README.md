@@ -67,3 +67,7 @@ Navigate to the `ReactClientApp` folder and then `npm install` followed by `npm 
 You should now be able to login and see the notes being retuned from the API.
 
 Added a [blog post](https://www.makebitbyte.com/blog/secure-spa-react-bff-duende) which explains how the BFF pattern works while securing a react front end app.
+
+
+https://github.com/SangeetAgarwal/SecuringAppsWithOAuth2AndOIDC/assets/2169707/6754a1f6-80e9-4908-8429-6035a4ac4fd8
+
