@@ -54,7 +54,8 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     // options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = "CodeFlowWithDPopScheme";
+    options.DefaultChallengeScheme = "CodeFlowWithPrivateKeyJWTScheme";
+    // options.DefaultChallengeScheme = "CodeFlowWithDPopScheme";
 })
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {

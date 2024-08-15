@@ -1,0 +1,81 @@
+/* Basic reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  background-color: rgb(247, 249, 252);
+}
+
+/* Header styling */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: rgb(25, 38, 56);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.header .nav {
+  display: flex;
+  gap: 20px;
+}
+
+.header .nav a {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.header .nav a:hover {
+  color: #007bff;
+}
+
+.header .search-bar {
+  flex-grow: 1;
+  margin: 0 20px;
+}
+
+.header .search-bar input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.header .profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header .profile .notifications {
+  position: relative;
+}
+
+.header .profile .notifications .bell-icon {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.header .profile .profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.header .profile .name {
+  font-size: 16px;
+  color: #333;
+}

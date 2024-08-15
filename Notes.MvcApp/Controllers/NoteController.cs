@@ -13,9 +13,9 @@ namespace Notes.MvcApp.Controllers
     // [Authorize(AuthenticationSchemes = "CodeFlowWithDPopScheme")]
     // [Authorize(AuthenticationSchemes = "CodeFlowWithTokenEncryptionScheme")]
     // [Authorize(AuthenticationSchemes = "CodeFlowWithPrivateKeyJWTAndJARScheme")]
-    [Authorize(AuthenticationSchemes = "CodeFlowWithJARScheme")]
-    // [Authorize(AuthenticationSchemes = "CodeFlowWithPrivateKeyJWTScheme")]
-    // [Authorize]
+    // [Authorize(AuthenticationSchemes = "CodeFlowWithJARScheme")]
+    [Authorize(AuthenticationSchemes = "CodeFlowWithPrivateKeyJWTScheme")]
+    //[Authorize]
     public class NoteController : Controller
     {
         private readonly INotesService _notesService;
@@ -40,7 +40,7 @@ namespace Notes.MvcApp.Controllers
                 return NotFound();
             }
 
-            var note =  await _notesService.GetNoteAsync(id);
+            var note = await _notesService.GetNoteAsync(id);
 
             return View(note);
 
@@ -80,7 +80,7 @@ namespace Notes.MvcApp.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View(new NoteViewModel {Id = Guid.NewGuid()});
+            return View(new NoteViewModel { Id = Guid.NewGuid() });
         }
 
 
@@ -101,7 +101,7 @@ namespace Notes.MvcApp.Controllers
         [Authorize(Policy = "CanSearch")]
         public IActionResult Search()
         {
-            return View(new SearchModel()); 
+            return View(new SearchModel());
         }
 
         [HttpPost]

@@ -26,6 +26,8 @@ builder.Services.AddDatalayer();
 
 builder.Services.AddServicelayer();
 
+// builder.Services.AddScoped(r => identityServerConfiguration);
+
 builder.Services.AddScoped(serviceProvider =>
 {
     var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
@@ -99,6 +101,8 @@ builder.Services.AddCors(o => o.AddPolicy("bffjsclient", builder =>
 }));
 
 // builder.Services.ConfigureDPoPTokensForScheme(JwtBearerDefaults.AuthenticationScheme);
+
+// builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

@@ -94,4 +94,8 @@ app.MapRemoteBffApiEndpoint(
         "/api/notes", "https://localhost:7094/api/Note/GetNotes")
     .RequireAccessToken(TokenType.User);
 
+app.MapRemoteBffApiEndpoint(
+        "/api/claimsFromAPI", "https://localhost:7094/api/Claim/GetClaims")
+    .RequireAccessToken(TokenType.User);
+
 app.Run();

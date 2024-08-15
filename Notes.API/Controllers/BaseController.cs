@@ -12,6 +12,10 @@ namespace Notes.API.Controllers
     {
         protected IDatalayerService DatalayerService;
         protected ILogger<BaseController> Logger;
+        public BaseController(ILogger<BaseController> logger)
+        {
+            Logger = logger;
+        }
         public BaseController(IDatalayerService datalayerService, ILogger<BaseController> logger)
         {
             DatalayerService = datalayerService;
