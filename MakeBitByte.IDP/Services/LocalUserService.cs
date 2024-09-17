@@ -77,8 +77,8 @@ namespace MakeBitByte.IDP.Services
             // Verify password  
             // return (user.Password == password);
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
-
-            return (result == PasswordVerificationResult.Success);
+            // return (result == PasswordVerificationResult.Success);
+            return (result != PasswordVerificationResult.Failed);
         } 
 
         public async Task<User> GetUserByUserNameAsync(string userName)

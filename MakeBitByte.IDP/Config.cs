@@ -257,14 +257,16 @@ public static class Config
                 RedirectUris =
                 {
                     "https://localhost:7249/signin-oidc",
-                    "https://localhost:5173/signin-oidc"
+                    "https://localhost:5173/signin-oidc",
+                    "https://127.0.0.1:5173/signin-oidc"
                 },
 
                 // where to redirect to after logout
                 PostLogoutRedirectUris =
                 {
                     "https://localhost:7249/signout-callback-oidc",
-                    "https://localhost:5173/signout-callback-oidc"
+                    "https://localhost:5173/signout-callback-oidc",
+                    "https://127.0.0.1:5173/signout-callback-oidc"
                 },
 
                 AllowedScopes =

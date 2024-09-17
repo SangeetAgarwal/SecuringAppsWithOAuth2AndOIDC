@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Notes.MvcApp.Configuration;
 using Notes.MvcApp.Helpers;
@@ -35,8 +36,8 @@ builder.Services.AddSingleton<IdentityServerConfiguration>(_ => identityServerCo
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
+//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 // IDP client
 builder.Services.AddHttpClient("IdpClient", client =>
 {

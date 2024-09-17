@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Notes.Api.Authorization;
 using Notes.Api.ClaimsPrincipal;
@@ -26,8 +27,7 @@ builder.Services.AddDatalayer();
 
 builder.Services.AddServicelayer();
 
-// builder.Services.AddScoped(r => identityServerConfiguration);
-
+builder.Services.AddScoped(r => identityServerConfiguration);
 builder.Services.AddScoped(serviceProvider =>
 {
     var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
@@ -44,6 +44,8 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
  2. caches results and 
  3. validates the bearer token
 */
+//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
      .AddJwtBearer(options =>
      {
@@ -101,8 +103,7 @@ builder.Services.AddCors(o => o.AddPolicy("bffjsclient", builder =>
 }));
 
 // builder.Services.ConfigureDPoPTokensForScheme(JwtBearerDefaults.AuthenticationScheme);
-
-// builder.Services.AddHttpClient();
+ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
