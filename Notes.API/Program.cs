@@ -37,13 +37,12 @@ builder.Services.AddScoped(serviceProvider =>
 
 builder.Services.AddScoped<IAuthorizationHandler, MustOwnResourceHandler>();
 
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
 /*
  1. Reads metadata from IDP
  2. caches results and 
  3. validates the bearer token
 */
+
 //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
