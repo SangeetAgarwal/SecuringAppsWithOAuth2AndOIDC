@@ -3,17 +3,18 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
+using Duende.IdentityServer.Test;
 using MakeBitByte.IDP.DbContexts;
 
 namespace MakeBitByte.IDP.Services
 {
     public class LocalUserProfileService : IProfileService
     {
-        private readonly ILocalUserService _localUserService;
+        private readonly TestUserStore _users;
 
-        public LocalUserProfileService(ILocalUserService localUserService)
+        public LocalUserProfileService(TestUserStore users)
         {
-            _localUserService = localUserService;
+            _users = users;
         }
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
@@ -25,14 +26,14 @@ namespace MakeBitByte.IDP.Services
                 // case IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint:
                 default:
                     var subjectId = context.Subject.GetSubjectId();
-                    var userClaims = await _localUserService.GetUserClaimsBySubjectAsync(subjectId);
+                    var u = _users.FindBySubjectId(subjectId);
 
-                    var claims = userClaims.ToList().Select(r => new Claim(r.Type, r.Value));
+                    var claims = u.Claims.ToList().Select(r => new Claim(r.Type, r.Value));
                     //context.AddRequestedClaims(claims);
-                    context.IssuedClaims.AddRange(claims);                   
+                    context.IssuedClaims.AddRange(claims);
                     break;
-                }
-    
+            }
+
         }
 
         public async Task IsActiveAsync(IsActiveContext context)

@@ -88,14 +88,14 @@ internal static class HostingExtensions
         // uncomment if you want to add a UI
         builder.Services.AddRazorPages();
 
-        builder.Services.AddScoped<ILocalUserService, LocalUserService>();
+        // builder.Services.AddScoped<ILocalUserService, LocalUserService>();
 
         builder.Services.AddScoped<IPasswordHasher<Entities.User>, PasswordHasher<Entities.User>>();
 
-        builder.Services.AddDbContext<UserDbContext>(options =>
-        {
-            options.UseSqlServer(identityConfiguration.IdentityUserDbConnectionString);
-        });
+        // builder.Services.AddDbContext<UserDbContext>(options =>
+        // {
+        //     options.UseSqlServer(identityConfiguration.IdentityUserDbConnectionString);
+        // });
 
         var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 
@@ -108,14 +108,14 @@ internal static class HostingExtensions
                 // https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/api_scopes#authorization-based-on-scopes
                 options.EmitStaticAudienceClaim = true;
             })
-            .AddProfileService<LocalUserProfileService>()
+
 
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddInMemoryApiResources(Config.ApiResources)
-
-
+            .AddTestUsers(TestUsers.Users)
+            .AddProfileService<LocalUserProfileService>()
             .AddJwtBearerClientAuthentication()
             //.AddConfigurationStore(options =>
             //{
@@ -128,7 +128,7 @@ internal static class HostingExtensions
             //            });
             //    };
             //})
-        //.AddConfigurationStoreCache()
+            //.AddConfigurationStoreCache()
             //.AddOperationalStore(options =>
             //{
             //    options.ConfigureDbContext = optionsBuilder =>
@@ -143,21 +143,31 @@ internal static class HostingExtensions
             //})
             //.AddSigningCredential(signingCertificate);
             .AddDeveloperSigningCredential();
-            
+
 
         // builder.Services.AddTransient<ITokenCreationService, EncryptedTokenCreationService>();
 
-        builder.Services.Configure<ForwardedHeadersOptions>(options =>
-        {
-            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-        });
+        // builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        // {
+        //     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        //     options.RequireHeaderSymmetry = false;
+        // });
+
 
         return builder.Build();
     }
 
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
-        app.UseForwardedHeaders();
+        // app.UseForwardedHeaders();
+
+        // https://github.com/IdentityServer/IdentityServer4/issues/4535
+        app.Use(async (ctx, next) =>
+        {
+            ctx.Request.Scheme = "https";
+            ctx.Request.Host = new HostString("my-idp.herokuapp.com");
+            await next();
+        });
 
         app.UseSerilogRequestLogging();
 

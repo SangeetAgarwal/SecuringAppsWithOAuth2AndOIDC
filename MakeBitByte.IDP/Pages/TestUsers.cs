@@ -19,7 +19,7 @@ public class TestUsers
             {
                 SubjectId = "36c434ff-888f-4820-a316-1a025f8a4f0c",
                 Username = "Vinita",
-                Password = "Sourdough@0621",
+                Password = "P@ssw0rd",
                 Claims =
                 {
                     new Claim(JwtClaimTypes.GivenName, "Vinita"),
@@ -32,7 +32,7 @@ public class TestUsers
             {
                 SubjectId = "da0d5f9a-8217-4a68-8398-db8506fdf618",
                 Username = "Appa",
-                Password = "Sourdough@0621",
+                Password = "P@ssw0rd",
                 Claims =
                 {
                     new Claim(JwtClaimTypes.GivenName, "Appa"),
@@ -45,7 +45,7 @@ public class TestUsers
             {
                 SubjectId = "1c94f897-2af3-46d4-a131-8a147d18a2f2",
                 Username = "Arjun",
-                Password = "Sourdough@0621",
+                Password = "P@ssw0rd",
                 Claims =
                 {
                     new Claim(JwtClaimTypes.GivenName, "Arjun"),

@@ -1,0 +1,13 @@
+services:
+  identity:
+    build:
+      context: .
+      dockerfile: Dockerfile_Identity
+    ports:
+      - "5000:80"
+      - "5001:443"
+    volumes:
+      - ./idp-dev-cert.pfx:/app/idp-dev-cert.pfx # Mount certificate into /app
+    environment:
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/idp-dev-cert.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=P@ssw0rd

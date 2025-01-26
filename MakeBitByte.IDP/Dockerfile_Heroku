@@ -1,0 +1,30 @@
+# Dockerfile_Heroku
+
+# ------------------ STAGE 1: Build ------------------
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY *.csproj ./
+RUN dotnet restore
+
+COPY . ./
+RUN dotnet publish -c Release -o /app
+
+# ------------------ STAGE 2: Runtime ------------------
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+
+COPY --from=build /app ./
+
+# Expose port 80 (Heroku will map its $PORT to this container port)
+# EXPOSE 80
+
+# Option A: Let your app listen to port 80.
+# Heroku sees EXPOSE 80 and routes incoming traffic (on $PORT externally) to port 80 inside the container.
+# ENV ASPNETCORE_URLS=http://+:80
+
+# Option B: If you prefer to bind to the actual $PORT environment variable, do:
+# ENV ASPNETCORE_URLS=http://+:${PORT}
+# In that case, you don't strictly need EXPOSE, but it's often good practice.
+
+ENTRYPOINT ["dotnet", "MakeBitByte.IDP.dll"]
